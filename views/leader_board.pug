@@ -1,0 +1,97 @@
+-var rownum = 1; //표의 순번을 메기기 위한 변수
+
+html
+	head
+		meta(name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, maximum-scale=1.0, minimum-scale=1.0")
+		title Leader Board
+		script(src='jquery.js')
+	body
+		p
+			a(href="/leader_board?dcd=year") 연간 누적순위
+			=" / "
+			a(href="/leader_board?dcd=mon") 월간 누적순위
+			=" / "
+			a(href="/leader_board?dcd=date") 일별순위
+		// 연간 누적순
+		if dcd === 'year'
+			p
+				select(id='years')
+					option 선택하세요
+					option 2019
+			table(border="1")
+				// 표 제목
+				tr
+					th 누적순위
+					th Tag
+					th Total PTS
+					th Entry
+					th Podium
+					th Wins
+				// 표 본문	
+				each item in record
+					tr
+						td= rownum++
+						td= item.TAG
+						td= item.PTS
+						td= item.ENTRY
+						td
+							//숫자가 0인 경우 공백표
+							if item.PODIUM === 0	
+							else
+								= item.PODIUM
+							end
+						td
+							if item.WINS === 0	
+							else
+								= item.WINS
+							end
+		else if dcd === 'mon'
+			p 2019년 5월
+			table(border="1")
+				// 표 제목
+				tr
+					th 누적순위
+					th Tag
+					th Total PTS
+					th Entry
+					th Podium
+					th Wins
+				// 표 본문	
+				each item in record
+					tr
+						td= rownum++
+						td= item.TAG
+						td= item.PTS
+						td= item.ENTRY
+						td
+							//숫자가 0인 경우 공백표
+							if item.PODIUM === 0	
+							else
+								= item.PODIUM
+							end
+						td
+							if item.WINS === 0	
+							else
+								= item.WINS
+							end
+		else if dcd === 'date'
+			h3 아직 못 만들었습니다. ㅠㅠ
+		else 
+			h3 아직 못 만들었습니다. ㅠㅠ
+		end
+script(type='text/javascript').
+	$(document).ready(function(){
+		var years = document.getElementById('years');
+		
+		for(var i=0; i<years.options.length; i++) {
+			if(years.options[i].value === '#{year}') {
+				years.options[i].selected = 'selected';
+			}
+		}
+	});
+			
+script.
+	$("#year").click(function(){
+		//alert(+$("#years option:selected").val());
+		//location.href = "/leader_board?dcd=year";
+	});
