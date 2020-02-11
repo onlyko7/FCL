@@ -61,6 +61,23 @@ app.get('/', function(req, res){
 	res.status(404).send('일치하는 주소가 없습니다.');
 });
 
+// FCL_BOT2
+app.get('/fcl_bot', function(req, res){
+	var msg = req.query.msg; // message
+	console.log('받은메시지:');
+    console.log(msg);
+    
+    if(msg.indexOf("!일정변경") != -1) {
+    	changeSchedule(req, res);
+    }
+    else if(msg.indexOf("!일정") != -1) {
+    	getSchedule(res);
+    }
+    else {
+    	res.send("");
+    }
+})
+
 app.get('/manager', function(req, res){
 	res.send('Manager Page');
 });
@@ -68,6 +85,40 @@ app.get('/manager', function(req, res){
 app.listen(port, function(){
 	console.log('Connected 8088 port!');
 });
+
+// 일정 업데이트
+function changeSchedule(req, res) {
+	var sql = 
+		`UPDATE NOTICE
+		    SET CONTENT = ?
+		  WHERE NUM = 1`;
+		   
+	var content = req.query.msg.split("!일정변경")[1];
+	var param = [content];
+			   
+	connection.query(sql, param, function (error, results, fields) {
+		if (error) {
+			console.log(error);
+		}
+			
+		res.send('일정변경 완료!');
+	});			
+}
+// 일정 불러오기
+function getSchedule(res) {
+	var sql = 
+			`SELECT CONTENT	
+			   FROM NOTICE N
+			  WHERE N.NUM = 1`; // 1=일정
+			   
+	connection.query(sql, function (error, results, fields) {
+		if (error) {
+			console.log(error);
+		}
+		
+		res.send(results[0].CONTENT.replace(/\n/gi, "<br>"));
+	});		
+}
 
 // 연간 누적순위 계산
 function calYear(req, res, dcd, year) {
