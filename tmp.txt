@@ -1,0 +1,8 @@
+CREATE TABLE `forza`.`NOTICE`
+(
+    `NUM`      decimal(3,0)  NOT NULL,
+    `TITLE`    varchar(255)  CHARACTER SET utf8 COLLATE utf8_unicode_ci,
+    `CONTENT`  text          CHARACTER SET utf8 COLLATE utf8_unicode_ci,
+    PRIMARY KEY (`NUM`)
+)
+ENGINE=InnoDB DEFAULT CHARSET=cp1257 COLLATE=cp1257_general_ci ROW_FORMAT=Dynamic;
