@@ -12,7 +12,7 @@ app.set('views', './views');
 app.use(express.static(__dirname + '/public'));
 
 const port = 8088;
-
+/*
 var connection = mysql.createConnection({
 	  host     :  db_info.host,
 	  port     :  db_info.port,
@@ -23,6 +23,18 @@ var connection = mysql.createConnection({
 	});
 
 connection.connect();
+*/
+
+var pool      =    mysql.createPool({
+    connectionLimit : 10, //important
+    host     :  db_info.host,
+	port     :  db_info.port,
+	user     :  db_info.user,
+	password : db_info.password,
+	database : db_info.database,
+	charset : 'utf8',    
+    debug    :  false
+});
 	
 app.get('/topic', function(req, res){
 	res.send(req.query.id);
@@ -88,21 +100,24 @@ app.listen(port, function(){
 
 // 일정 업데이트
 function changeSchedule(req, res) {
+	var content = req.query.msg.split("!일정변경")[1];
+	var param = [content];
+
 	var sql = 
 		`UPDATE NOTICE
 		    SET CONTENT = ?
 		  WHERE NUM = 1`;
-		   
-	var content = req.query.msg.split("!일정변경")[1];
-	var param = [content];
-			   
-	connection.query(sql, param, function (error, results, fields) {
+	
+	var query = mysql.format(sql, param);
+	
+	
+	pool.query(query, function (error, response) {
 		if (error) {
 			console.log(error);
 		}
 			
 		res.send('일정변경 완료!');
-	});			
+	});				
 }
 // 일정 불러오기
 function getSchedule(res) {
@@ -111,7 +126,7 @@ function getSchedule(res) {
 			   FROM NOTICE N
 			  WHERE N.NUM = 1`; // 1=일정
 			   
-	connection.query(sql, function (error, results, fields) {
+	pool.query(sql, function (error, results, fields) {
 		if (error) {
 			console.log(error);
 		}
