@@ -79,10 +79,10 @@ app.get('/fcl_bot', function(req, res){
 	console.log('받은메시지:');
     console.log(msg);
     
-    if(msg.indexOf("!일정변경") != -1) {
+    if(msg.includes("!일정변경")) {
     	changeSchedule(req, res);
     }
-    else if(msg.indexOf("!일정") != -1) {
+    else if(msg.includes("!일정")) {
     	getSchedule(res);
     }
     else {
