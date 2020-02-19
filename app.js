@@ -85,6 +85,24 @@ app.get('/fcl_bot', function(req, res){
     else if(msg.includes("!일정")) {
     	getSchedule(res);
     }
+    else if(msg.includes("!라이벌기록")) {
+    	try {
+    		changeRival(req, res);
+    	}
+    	catch(err){
+    		res.send("라이벌기록 업데이트 중 오류 발생!");
+    	}
+    	
+    }
+    else if(msg.includes("!라이벌삭제")) {
+    	deleteRival(req, res);
+    }
+    else if(msg.includes("!라이벌초기화")) {
+    	deleteAllRival(res);
+    }
+    else if(msg.includes("!라이벌")) {
+    	getRival(res);
+    }
     else {
     	res.send("");
     }
@@ -97,6 +115,156 @@ app.get('/manager', function(req, res){
 app.listen(port, function(){
 	console.log('Connected 8088 port!');
 });
+
+// Rival 기록 조회
+function getRival(res) {
+	var sql = 
+		`SELECT NAME
+		      , BEST_LAP	
+		   FROM RIVAL
+		  ORDER BY BEST_LAP ASC`;
+		   
+	pool.query(sql, function (error, results, fields) {
+		if (error) {
+			console.log(error);
+		}
+		
+		if(results.length == 0) {
+			res.send("등록된 라이벌 기록이 없습니다.");
+			return;
+		}
+		
+		var response = "";
+		for(var i=0; i<results.length; i++) {
+			response = response + (i+1) + " / " +
+						results[i].NAME + " / " +
+						results[i].BEST_LAP + "<br>";
+					   
+		}
+		res.send(response);
+	});		
+}
+
+//Rival 기록 삭제
+function deleteRival(req, res) {
+	var msg = req.query.msg;
+	msg = msg.split("!라이벌삭제")[1];
+	msg = msg.replace(/\s/gi, ""); //공백제거
+	
+	if(msg.length == 0) {
+		res.send("삭제할 대상의 이름을 입력해주십시오.");
+		return;
+	}
+	
+	name = msg;
+	
+	var param = [name];
+	
+	var sql = 
+		`DELETE	
+		   FROM RIVAL
+		  WHERE NAME = ?`;
+		   
+	var query = mysql.format(sql, param);
+	
+	pool.query(query, function (error, response) {
+		if (error) {
+			console.log(error);
+		}
+		
+		// 업데이트 건수가 1이면 정상
+		if(response.affectedRows == 1) {
+			res.send("라이벌 기록 삭제 완료.");
+			return;
+		}
+		else {
+			res.send("삭제할 데이터가 없습니다.");
+			return;
+		}
+	});		
+}
+
+//Rival 기록 전 삭제
+function deleteAllRival(res) {
+	var sql = 
+		`DELETE	
+		   FROM RIVAL`;
+		   
+	pool.query(sql, function (error, response) {
+		if (error) {
+			console.log(error);
+		}
+		
+		res.send("라이벌 기록 초기화 완료.");		
+	});		
+}
+
+// Rival 기록 업데이트
+function changeRival(req, res) {
+	var msg = req.query.msg;
+	msg = msg.split("!라이벌기록")[1];
+	msg = msg.replace(/\s/gi, ""); //공백제거
+	
+	var name;
+	var best_lap;
+	
+	if(/,[0-9][.][0-9]*$/.test(msg) == false) {
+		res.send("아래 형식으로 입력해주세요.<br>" +
+				 "!라이벌기록 별명,1.12345");
+		return;
+	}
+	else if(msg.split(",").length != 2) {
+		res.send("아래 형식으로 입력해주세요." +
+		 "!라이벌기록 별명,1.12345");
+		return;
+	}
+	
+	var arr = msg.split(",");
+	
+	name = arr[0];
+	best_lap = arr[1];
+	
+	// 데이터 갱신
+	var param = [best_lap, name];
+
+	var sql = 
+		`UPDATE RIVAL
+		    SET BEST_LAP = ?
+		  WHERE NAME = ?`;
+	
+	var query = mysql.format(sql, param);
+	
+	pool.query(query, function (error, response) {
+		if (error) {
+			console.log(error);
+		}
+		
+		// 업데이트 건수가 1이면 정상
+		if(response.affectedRows == 1) {
+			res.send("라이벌 기록 변경 완료.");
+			return;
+		}
+		else {
+			// 데이터가 없으면 insert
+			sql = 
+				`INSERT INTO RIVAL(BEST_LAP, NAME) VALUES(?, ?)`;
+			
+			query = mysql.format(sql, param);
+			
+			pool.query(query, function (error, response) {
+				if (error) {
+					console.log(error);
+				}
+				
+				res.send("라이벌 기록 등록 완료.");
+				return;
+			});	
+		}
+	});	
+	
+	
+	
+}
 
 // 일정 업데이트
 function changeSchedule(req, res) {
