@@ -208,7 +208,7 @@ function changeRival(req, res) {
 	var name;
 	var best_lap;
 	
-	if(/,[0-9][.][0-9]*$/.test(msg) == false) {
+	if(/,[0-9]*[.][0-9]*$/.test(msg) == false) {
 		res.send("아래 형식으로 입력해주세요.<br>" +
 				 "!라이벌기록 별명,1.12345");
 		return;
@@ -241,7 +241,7 @@ function changeRival(req, res) {
 		
 		// 업데이트 건수가 1이면 정상
 		if(response.affectedRows == 1) {
-			res.send("라이벌 기록 변경 완료.");
+			getRival(res);
 			return;
 		}
 		else {
@@ -256,7 +256,7 @@ function changeRival(req, res) {
 					console.log(error);
 				}
 				
-				res.send("라이벌 기록 등록 완료.");
+				getRival(res);
 				return;
 			});	
 		}
