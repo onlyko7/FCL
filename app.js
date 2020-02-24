@@ -120,7 +120,7 @@ app.listen(port, function(){
 function getRival(res) {
 	var sql = 
 		`SELECT NAME
-		      , BEST_LAP	
+		      , FLOOR(BEST_LAP * 100000) + 100000000 AS BEST_LAP	
 		   FROM RIVAL
 		  ORDER BY BEST_LAP ASC`;
 		   
@@ -135,10 +135,12 @@ function getRival(res) {
 		}
 		
 		var response = "";
+		var best_lap = "";
 		for(var i=0; i<results.length; i++) {
+			best_lap = String(results[i].BEST_LAP);
 			response = response + (i+1) + " / " +
 						results[i].NAME + " / " +
-						results[i].BEST_LAP + "<br>";
+						parseInt(best_lap.substr(2,2)) + ":" + best_lap.substr(4,2) + "." + best_lap.substr(6) +"<br>";
 					   
 		}
 		res.send(response);
@@ -208,21 +210,25 @@ function changeRival(req, res) {
 	var name;
 	var best_lap;
 	
-	if(/,[0-9]*[.][0-9]*$/.test(msg) == false) {
-		res.send("아래 형식으로 입력해주세요.<br>" +
-				 "!라이벌기록 별명,1.12345");
-		return;
-	}
-	else if(msg.split(",").length != 2) {
-		res.send("아래 형식으로 입력해주세요." +
-		 "!라이벌기록 별명,1.12345");
-		return;
-	}
-	
 	var arr = msg.split(",");
 	
 	name = arr[0];
 	best_lap = arr[1];
+	
+	if(msg.split(",").length != 2) {
+		res.send("아래 형식으로 입력해주세요..<br>" +
+		 "!라이벌기록 별명,1:12.345");
+		return;
+	}
+	
+	if(/^\d{1,2}[:]\d{2}[.]\d{1,3}$/.test(best_lap) == false) {
+		res.send("아래 형식으로 입력해주세요.<br>" +
+				 "!라이벌기록 별명,1:12.345");
+		return;
+	}
+	
+	// 저장하기 위해 숫자형으로 변환
+	best_lap = best_lap.replace(".", "").replace(":",".");
 	
 	// 데이터 갱신
 	var param = [best_lap, name];
