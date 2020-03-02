@@ -136,10 +136,24 @@ function getRival(res) {
 		
 		var response = "";
 		var best_lap = "";
+		var prepix = "";
 		for(var i=0; i<results.length; i++) {
 			best_lap = String(results[i].BEST_LAP);
-			response = response + (i+1) + " / " +
-						results[i].NAME + " / " +
+			
+			switch(i){
+			case 0:
+				prepix = "(별)";
+				break;
+			case 3:
+				prepix = "------------------------------<br>" + (i+1);
+				break;
+			default:
+				prepix = (i+1);
+				break;
+			}
+			
+			response = response + prepix + " [ " +
+						results[i].NAME + " ] " +
 						parseInt(best_lap.substr(2,2)) + ":" + best_lap.substr(4,2) + "." + best_lap.substr(6) +"<br>";
 					   
 		}
