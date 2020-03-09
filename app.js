@@ -103,6 +103,18 @@ app.get('/fcl_bot', function(req, res){
     else if(msg.includes("!라이벌")) {
     	getRival(res);
     }
+    else if(msg.includes("!알림등록")) {
+    	setAlarm(req, res);
+    }
+    else if(msg.includes("!알림삭제")) {
+    	deleteAlarm(req, res);
+    }
+    else if(msg.includes("!알림조회")) {
+    	getAlarm(req, res);
+    }
+    else if(msg.includes("!알림전체조회")) {
+    	getAlarmAll(res);
+    }
     else {
     	res.send("");
     }
@@ -115,6 +127,169 @@ app.get('/manager', function(req, res){
 app.listen(port, function(){
 	console.log('Connected 8088 port!');
 });
+
+function getAlarmAll(res){
+	var sql = 
+		`SELECT ID 
+		      , GROUP_CONCAT(CONTENT) as CONTENTS 
+		   FROM ALARM
+		  GROUP BY ID`;
+	
+	pool.query(sql, function (error, results, fields) {
+		if (error) {
+			console.log(error);
+		}
+		
+		var contents = "";
+		for(var i=0; i<results.length; i++) {
+			if(i==0)
+				contents = contents + results[i].ID + "|" + results[i].CONTENTS;	
+			else
+				contents = contents + "<br>" + results[i].ID + "|" + results[i].CONTENTS;		   
+		}
+
+		res.send(contents);
+	});	
+}
+
+// 알림조회
+function getAlarm(req, res){
+	var sender = req.query.sender;
+	
+	var id = sender;
+	
+	var sql = 
+		`SELECT ID
+		      , CONTENT	
+		   FROM ALARM
+		  WHERE ID = ?
+		  ORDER BY CONTENT ASC`;
+	var param = [id];
+	
+	pool.query(sql, param, function (error, results, fields) {
+		if (error) {
+			console.log(error);
+		}
+		
+		if(results.length == 0) {
+			res.send("등록된 키워드가 없습니다.");
+			return;
+		}
+		
+		var contents = "";
+		for(var i=0; i<results.length; i++) {
+			contents = contents + results[i].CONTENT + "<br>";		   
+		}
+		res.send(contents);
+	});		
+}
+
+// 알림삭제
+function deleteAlarm(req, res){
+	var msg = req.query.msg;
+	var sender = req.query.sender;
+	
+	msg = msg.split("!알림삭제")[1];
+	msg = msg.replace(/\s/gi, ""); //공백제거
+	
+	if(msg.length == 0) {
+		res.send("삭제할 키워드를 입력해주십시오.");
+		return;
+	}
+	
+	var id = sender;
+	var content = msg;
+	
+	var param = [id, content];
+	
+	var sql = 
+		`DELETE	
+		   FROM ALARM
+		  WHERE ID = ?
+		    AND CONTENT = ?`;
+		   
+	var query = mysql.format(sql, param);
+	
+	pool.query(query, function (error, response) {
+		if (error) {
+			console.log(error);
+		}
+		
+		// 업데이트 건수가 1이면 정상
+		if(response.affectedRows == 1) {
+			getAlarm(req, res);
+			return;
+		}
+		else {
+			res.send("삭제할 데이터가 없습니다.");
+			return;
+		}
+	});		
+
+}
+
+// 알림등록
+function setAlarm(req, res){
+	var msg = req.query.msg;
+	var sender = req.query.sender;
+	
+	msg = msg.split("!알림등록")[1];
+	msg = msg.replace(/\s/gi, ""); //공백제거
+	
+	// 정합성 체크
+	if(msg.includes(",")) {
+		res.send(",는 입력하지 말아주십시오.");
+		return;
+	}
+	else if(msg.includes("|")) {
+		res.send("|는 입력하지 말아주십시오.");
+		return;
+	}
+	
+	var id = sender;
+	var content = msg;
+	
+	var sql = 
+		`SELECT ID
+		      , CONTENT
+		   FROM ALARM
+		  WHERE ID = ?`;
+		   
+	var param = [id];
+			
+	var contents = "";
+	
+	pool.query(sql, param, function (error, results, fields) {
+		if (error) {
+			console.log(error);
+		}
+		
+		for(var i=0; i<results.length; i++) {
+			// 기등록 키워드 처리
+			if(content == results[i].CONTENT) {
+				res.send("이미 등록된 키워드입니다.");
+				return;
+			}
+		}
+		
+		// 기등록 키워드가 없으면 insert
+		param = [id, content];
+		sql = 
+			`INSERT INTO ALARM(ID, CONTENT) VALUES(?, ?)`;
+		
+		query = mysql.format(sql, param);
+		
+		pool.query(query, function (error, response) {
+			if (error) {
+				console.log(error);
+			}
+			
+			getAlarm(req, res);
+			return;
+		});	
+		
+	});		
+}
 
 // Rival 기록 조회
 function getRival(res) {

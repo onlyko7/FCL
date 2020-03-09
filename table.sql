@@ -22,3 +22,12 @@ CREATE TABLE `forza`.`RECORD`
     PRIMARY KEY (RACE_DATE, TRACK, TAG)
 )
 ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci ROW_FORMAT=Compact;
+
+
+CREATE TABLE `forza`.`ALARM`
+(
+    `ID`       varchar(100)  CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL,
+    `CONTENT`  text          CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL,
+    INDEX `IDX_ALARM_ID` (`ID`)
+)
+ENGINE=InnoDB DEFAULT CHARSET=cp1257 COLLATE=cp1257_general_ci ROW_FORMAT=Dynamic;
