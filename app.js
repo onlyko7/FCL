@@ -330,7 +330,10 @@ function getRival(res) {
 			response = response + prepix + " [ " +
 						results[i].NAME + " ] " +
 						parseInt(best_lap.substr(2,2)) + ":" + best_lap.substr(4,2) + "." + best_lap.substr(6) +"<br>";
-					   
+			
+			if(results[i].NAME.includes("쌍자") || results[i].NAME.includes("쌍쟈")) {
+				response = response + "=================<br>";
+			}
 		}
 		res.send(response);
 	});		
