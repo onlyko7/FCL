@@ -37,6 +37,7 @@ CREATE TABLE `forza`.`SCRAP`
 (
     `ID`        varchar(10)    CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL,
     `SUBJECT`   varchar(1000)  CHARACTER SET utf8 COLLATE utf8_unicode_ci,
+    `URL`   varchar(1000)  CHARACTER SET utf8 COLLATE utf8_unicode_ci,
     `COMPLETE`  char(1)        CHARACTER SET utf8 COLLATE utf8_unicode_ci,
     PRIMARY KEY (`ID`)
 )
