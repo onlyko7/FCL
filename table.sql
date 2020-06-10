@@ -31,3 +31,13 @@ CREATE TABLE `forza`.`ALARM`
     INDEX `IDX_ALARM_ID` (`ID`)
 )
 ENGINE=InnoDB DEFAULT CHARSET=cp1257 COLLATE=cp1257_general_ci ROW_FORMAT=Dynamic;
+
+
+CREATE TABLE `forza`.`SCRAP`
+(
+    `ID`        varchar(10)    CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL,
+    `SUBJECT`   varchar(1000)  CHARACTER SET utf8 COLLATE utf8_unicode_ci,
+    `COMPLETE`  char(1)        CHARACTER SET utf8 COLLATE utf8_unicode_ci,
+    PRIMARY KEY (`ID`)
+)
+ENGINE=InnoDB DEFAULT CHARSET=cp1257 COLLATE=cp1257_general_ci ROW_FORMAT=Dynamic;

@@ -1,6 +1,9 @@
 const mysql = require('mysql');
 const db_info = require('../config/db_info');
 const express = require('express');
+const client = require('cheerio-httpcli');
+const utf8 = require("utf8");
+const cron = require("node-cron");
 const app = express();
 
 var counter = 1; //접속 카운터
@@ -36,6 +39,10 @@ var pool      =    mysql.createPool({
     debug    :  false
 });
 	
+app.get('/temp', function(req, res){
+	res.render('temp');
+});
+
 app.get('/topic', function(req, res){
 	res.send(req.query.id);
 });
@@ -76,8 +83,8 @@ app.get('/', function(req, res){
 // FCL_BOT2
 app.get('/fcl_bot', function(req, res){
 	var msg = req.query.msg; // message
-	console.log('받은메시지:');
-    console.log(msg);
+	//console.log('받은메시지:');
+    //console.log(msg);
     
     if(msg.includes("!일정변경")) {
     	changeSchedule(req, res);
@@ -124,9 +131,126 @@ app.get('/manager', function(req, res){
 	res.send('Manager Page');
 });
 
+// 명언관리
+app.get('/maxim', function(req, res){
+	res.render('maxim');
+});
+
+// 루리웹 정보 가져오기
+app.get('/ruliweb', function(req, res){
+	var sql = 
+		`SELECT ID
+		      , SUBJECT 
+		      , URL
+		   FROM SCRAP
+		  WHERE COMPLETE <> 'Y'`;
+	
+	pool.query(sql, function (error, results, fields) {
+		if (error) {
+			console.log(error);
+		}
+		
+		var id = "";
+		var subject = "";
+		var url = "";
+		var msg = "";
+		
+		// 결과가 없으면 리턴
+		if(results.length == 0) {
+			res.send("");
+			return;
+		}
+		
+		// 결과 메시지 조립
+		id = results[0].ID;
+		subject = results[0].SUBJECT;
+		url = results[0].URL;
+		
+		msg = subject +"<BR><BR>"
+		    + url;
+
+		// 조회된 결과 완료여부 Y로 갱신
+		var param = [id];
+
+		var sql = 
+			`UPDATE SCRAP
+			    SET COMPLETE = 'Y'
+			  WHERE ID = ?`;
+		
+		var query = mysql.format(sql, param);
+		
+		pool.query(query, function (error, response) {
+			if (error) {
+				console.log(error);
+			}
+		});	
+		
+		res.send(msg);
+	});	
+
+});
+
+//batch
+//second minute hour day-of-month month day-of-week
+cron.schedule('*/1 * * * *', function(){
+  //console.log('node-cron 실행 테스트');
+  
+  const words = [
+	  "xsx",
+	  "엑시엑",
+	  "시리즈 x"
+  ];
+  
+  for(var i=0; i<words.length; i++){
+	getRuliWeb(words[i]);  
+  }
+});
+
 app.listen(port, function(){
 	console.log('Connected 8088 port!');
 });
+
+// 루리웹 정보검색
+function getRuliWeb(word) {
+	var url = "http://bbs.ruliweb.com/xbox/board/300003?search_type=subject&search_key=";
+	const param = { };
+	
+	url = url + word;
+	
+	client.fetch(utf8.encode(url), param, function( error, $, response ) {
+		// 에러체크
+		if( error ) {
+			console.error( "Error : ", error );
+			return;
+		}
+
+		/*
+		// 게시판 테이블
+		var table = $(".board_main.theme_default");
+	
+		$(".board_main.theme_default .board_list_table .table_body").each(function(idx){
+			var id = $(this).children(".id").text().trim();
+			var subject = $(this).children(".subject").children(".relative").children(".deco").text().trim();
+			var url = $(this).children(".subject").children(".relative").children(".deco").attr("href");
+			console.log(idx + ":" + id + "," + subject + "," + url);
+		});
+		*/
+		
+		var first_id = $(".board_main.theme_default .board_list_table .table_body .id").first().text().trim();
+		var first_subject = $(".board_main.theme_default .board_list_table .table_body .deco").first().text().trim();
+		var first_url = $(".board_main.theme_default .board_list_table .table_body .deco").first().attr("href");
+		
+		// 검색결과 뒤 주소는 필요없어서 잘라
+		first_url = first_url.split('?')[0];
+		
+		//console.log(first_id);
+		//console.log(first_subject);
+		//console.log(first_url);
+		
+		// 결과 저장
+		setRuliWeb(first_id, first_subject, first_url);
+	});
+}
 
 function getAlarmAll(res){
 	var sql = 
@@ -585,4 +709,39 @@ function calMon(req, res, dcd, year, mon) {
 			
 		res.render('leader_board', {dcd: dcd, year:year,  record: results});
 	});			
+}
+
+// 루리웹 검색 결과 저장
+function setRuliWeb(id, subject, url){	
+	var sql = 
+		`SELECT ID
+		   FROM SCRAP
+		  WHERE ID = ?`;
+		   
+	var param = [id];
+			
+	pool.query(sql, param, function (error, results, fields) {
+		if (error) {
+			console.log(error);
+		}
+		
+		// 기등록된 정보는 skip
+		if(results.length > 0) {
+			return;
+		}
+		
+		// 기등록 정가 없으면 insert
+		param = [id, subject, url];
+		sql = 
+			`INSERT INTO SCRAP(ID, SUBJECT, URL, COMPLETE) VALUES(?, ?, ?, 'N')`;
+		
+		query = mysql.format(sql, param);
+		
+		pool.query(query, function (error, response) {
+			if (error) {
+				console.log(error);
+			}
+			return;
+		});
+	});		
 }
