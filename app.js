@@ -6,6 +6,8 @@ const utf8 = require("utf8");
 const cron = require("node-cron");
 const app = express();
 
+const notice = require('./Dao/Notice.js');
+
 var counter = 1; //접속 카운터
 
 app.locals.pretty  = true;
@@ -87,10 +89,10 @@ app.get('/fcl_bot', function(req, res){
     //console.log(msg);
     
     if(msg.includes("!일정변경")) {
-    	changeSchedule(req, res);
+    	notice.changeSchedule(pool, req, res);
     }
     else if(msg.includes("!일정")) {
-    	getSchedule(res);
+    	notice.getSchedule(pool, res);
     }
     else if(msg.includes("!라이벌기록")) {
     	try {
@@ -101,19 +103,19 @@ app.get('/fcl_bot', function(req, res){
     	}
     	
     }
-    else if(msg.includes("!라이벌삭제")) {
+    else if(msg.startsWith("!라이벌삭제")) {
     	deleteRival(req, res);
     }
-    else if(msg.includes("!라이벌초기화")) {
+    else if(msg.startsWith("!라이벌초기화")) {
     	deleteAllRival(res);
     }
     else if(msg.includes("!라이벌")) {
     	getRival(res);
     }
-    else if(msg.includes("!알림등록")) {
+    else if(msg.startsWith("!알림등록")) {
     	setAlarm(req, res);
     }
-    else if(msg.includes("!알림삭제")) {
+    else if(msg.startsWith("!알림삭제")) {
     	deleteAlarm(req, res);
     }
     else if(msg.includes("!알림조회")) {
@@ -121,6 +123,12 @@ app.get('/fcl_bot', function(req, res){
     }
     else if(msg.includes("!알림전체조회")) {
     	getAlarmAll(res);
+    }
+    else if(msg.startsWith("!우승자조회")) {
+    	notice.getChamp(pool, res);
+    }
+    else if(msg.startsWith("!우승")) {
+    	notice.setChamp(pool, req, res);
     }
     else {
     	res.send("");
@@ -209,6 +217,7 @@ cron.schedule('*/1 * * * *', function(){
 app.listen(port, function(){
 	console.log('Connected 8088 port!');
 });
+
 
 // 루리웹 정보검색
 function getRuliWeb(word) {
@@ -589,43 +598,6 @@ function changeRival(req, res) {
 	
 	
 	
-}
-
-// 일정 업데이트
-function changeSchedule(req, res) {
-	var content = req.query.msg.split("!일정변경")[1];
-	var param = [content];
-
-	var sql = 
-		`UPDATE NOTICE
-		    SET CONTENT = ?
-		  WHERE NUM = 1`;
-	
-	var query = mysql.format(sql, param);
-	
-	
-	pool.query(query, function (error, response) {
-		if (error) {
-			console.log(error);
-		}
-			
-		res.send('일정변경 완료!');
-	});				
-}
-// 일정 불러오기
-function getSchedule(res) {
-	var sql = 
-			`SELECT CONTENT	
-			   FROM NOTICE N
-			  WHERE N.NUM = 1`; // 1=일정
-			   
-	pool.query(sql, function (error, results, fields) {
-		if (error) {
-			console.log(error);
-		}
-		
-		res.send(results[0].CONTENT.replace(/\n/gi, "<br>"));
-	});		
 }
 
 // 연간 누적순위 계산
