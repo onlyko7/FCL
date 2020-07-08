@@ -206,7 +206,9 @@ cron.schedule('*/1 * * * *', function(){
   const words = [
 	  "xsx",
 	  "엑시엑",
-	  "시리즈 x"
+	  "시리즈 x",
+	  "포르자",
+	  "forza"
   ];
   
   for(var i=0; i<words.length; i++){
@@ -233,24 +235,35 @@ function getRuliWeb(word) {
 			return;
 		}
 
-		/*
+		
 		// 게시판 테이블
 		var table = $(".board_main.theme_default");
 	
+		var first_id, first_subject, first_url;
+		
 		$(".board_main.theme_default .board_list_table .table_body").each(function(idx){
 			var id = $(this).children(".id").text().trim();
 			var subject = $(this).children(".subject").children(".relative").children(".deco").text().trim();
 			var url = $(this).children(".subject").children(".relative").children(".deco").attr("href");
-			console.log(idx + ":" + id + "," + subject + "," + url);
+			
+			// 공지를 제외한 첫번째 검색 결과를 찾는다
+			if(subject.length != 0) {
+				//console.log(idx + ":" + id + "," + subject + "," + url);
+				first_id = id;
+				first_subject = subject;
+				first_url = url.split('?')[0]; //검색결과 뒤 주소는 필요없어서 자름
+				
+				return false;
+			}
 		});
-		*/
 		
-		var first_id = $(".board_main.theme_default .board_list_table .table_body .id").first().text().trim();
-		var first_subject = $(".board_main.theme_default .board_list_table .table_body .deco").first().text().trim();
-		var first_url = $(".board_main.theme_default .board_list_table .table_body .deco").first().attr("href");
+		
+		//var first_id = $(".board_main.theme_default .board_list_table .table_body .id").first().text().trim();
+		//var first_subject = $(".board_main.theme_default .board_list_table .table_body .deco").first().text().trim();
+		//var first_url = $(".board_main.theme_default .board_list_table .table_body .deco").first().attr("href");
 		
 		// 검색결과 뒤 주소는 필요없어서 잘라
-		first_url = first_url.split('?')[0];
+		//first_url = first_url.split('?')[0];
 		
 		//console.log(first_id);
 		//console.log(first_subject);
