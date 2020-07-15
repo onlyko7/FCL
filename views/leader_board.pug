@@ -12,8 +12,8 @@ html
 			a(href="/leader_board?dcd=mon") 월간 누적순위
 			=" / "
 			a(href="/leader_board?dcd=date") 일별순위
-		// 연간 누적순
 		if dcd === 'year'
+			// 연간 누적순위
 			p
 				select(id='years')
 					option 선택하세요
@@ -46,6 +46,7 @@ html
 								= item.WINS
 							end
 		else if dcd === 'mon'
+			// 월간 누적순
 			p 2019년 5월
 			table(border="1")
 				// 표 제목
@@ -75,6 +76,7 @@ html
 								= item.WINS
 							end
 		else if dcd === 'date'
+			// 일별순
 			h3 아직 못 만들었습니다... ㅠㅠ
 		else 
 			h3 아직 못 만들었습니다... ㅠㅠ
