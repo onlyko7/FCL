@@ -1,0 +1,11 @@
+html
+	head
+		meta(name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, maximum-scale=1.0, minimum-scale=1.0")
+		link(href='css/style.css' rel='stylesheet')
+	body
+		form(action='upload' method='post' enctype="multipart/form-data")
+			p 파일이름 :	
+				input(type='text' name='filename')
+			p
+				input(type='file' name='userfile')
+				input(type='submit')
