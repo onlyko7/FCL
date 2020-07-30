@@ -503,7 +503,7 @@ function getRival(res) {
 					results[i].NAME.includes("쌍쟈") ||
 					results[i].NAME.includes("썅자") ||
 					results[i].NAME.includes("썅쟈")) {
-				response = response + "=================<br>";
+				response = response + "======================<br>";
 			}
 		}
 		res.send(response);
