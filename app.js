@@ -5,6 +5,7 @@ const client = require('cheerio-httpcli');
 const utf8 = require("utf8");
 const cron = require("node-cron");
 const app = express();
+const coin = require("./coin.js");
 
 const multer = require('multer'); // express에 multer모듈 적용 (for 파일업로드)
 const upload = multer({
@@ -240,6 +241,11 @@ cron.schedule('*/1 * * * *', function(){
 
 app.listen(port, function(){
 	console.log('Connected 8088 port!');
+});
+
+// CoinTrader
+app.get('/coin', function(req, res){
+	coin.getCurrMaster();
 });
 
 
@@ -499,11 +505,12 @@ function getRival(res) {
 						results[i].NAME + " ] " +
 						parseInt(best_lap.substr(2,2)) + ":" + best_lap.substr(4,2) + "." + best_lap.substr(6) +"<br>";
 			
-			if(results[i].NAME.includes("쌍자") || 
-					results[i].NAME.includes("쌍쟈") ||
-					results[i].NAME.includes("썅자") ||
-					results[i].NAME.includes("썅쟈")) {
-				response = response + "======================<br>";
+			if(results[i].NAME.includes("래머") || 
+					results[i].NAME.includes("세현") ||
+					results[i].NAME.includes("레머") ||
+					results[i].NAME.includes("새현")) {
+				//response = response + "======================<br>";
+				response = response + "xxxxxxxxxxxxxxxxxxxxxx<br>";
 			}
 		}
 		res.send(response);
