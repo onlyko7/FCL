@@ -5,7 +5,6 @@ const client = require('cheerio-httpcli');
 const utf8 = require("utf8");
 const cron = require("node-cron");
 const app = express();
-const coin = require("./coin.js");
 
 const multer = require('multer'); // express에 multer모듈 적용 (for 파일업로드)
 const upload = multer({
@@ -243,10 +242,6 @@ app.listen(port, function(){
 	console.log('Connected 8088 port!');
 });
 
-// CoinTrader
-app.get('/coin', function(req, res){
-	coin.getCurrMaster();
-});
 
 
 // 루리웹 정보검색
