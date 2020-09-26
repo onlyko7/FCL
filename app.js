@@ -173,7 +173,8 @@ app.get('/ruliweb', function(req, res){
 		      , SUBJECT 
 		      , URL
 		   FROM SCRAP
-		  WHERE COMPLETE <> 'Y'`;
+		  WHERE COMPLETE <> 'Y'
+		    AND LAST_DATE >= '2020-09-26 10:00:00'`;
 	
 	pool.query(sql, function (error, results, fields) {
 		if (error) {
@@ -224,18 +225,31 @@ app.get('/ruliweb', function(req, res){
 //second minute hour day-of-month month day-of-week
 cron.schedule('*/1 * * * *', function(){
   //console.log('node-cron 실행 테스트');
+	
+	var xbox_url = "http://bbs.ruliweb.com/xbox/board/300003?search_type=subject&search_key=";
+	var pc_url = "http://bbs.ruliweb.com/pc/board/300006?search_type=subject&search_key=";
   
-  const words = [
+	const xbox_words = [
 	  "xsx",
 	  "엑시엑",
 	  "시리즈 x",
 	  "포르자",
 	  "forza"
-  ];
+  	];
+	
+	const pc_words = [
+	  "RTX"
+  	];
   
-  for(var i=0; i<words.length; i++){
-	getRuliWeb(words[i]);  
-  }
+	//XBOX 게시판
+	for(var i=0; i<xbox_words.length; i++){
+		getRuliWeb(xbox_url, xbox_words[i]);  
+	}
+	
+	//PC 게시판
+	for(var i=0; i<xbox_words.length; i++){
+		getRuliWeb(pc_url, pc_words[i]);  
+	}
 });
 
 app.listen(port, function(){
@@ -245,8 +259,7 @@ app.listen(port, function(){
 
 
 // 루리웹 정보검색
-function getRuliWeb(word) {
-	var url = "http://bbs.ruliweb.com/xbox/board/300003?search_type=subject&search_key=";
+function getRuliWeb(url, word) {
 	const param = { };
 	
 	url = url + word;
@@ -722,6 +735,10 @@ function calMon(req, res, dcd, year, mon) {
 
 // 루리웹 검색 결과 저장
 function setRuliWeb(id, subject, url){	
+	if(id == null) {
+		return;
+	}
+	
 	var sql = 
 		`SELECT ID
 		   FROM SCRAP
@@ -739,10 +756,10 @@ function setRuliWeb(id, subject, url){
 			return;
 		}
 		
-		// 기등록 정가 없으면 insert
+		// 기등록 정보가 없으면 insert
 		param = [id, subject, url];
 		sql = 
-			`INSERT INTO SCRAP(ID, SUBJECT, URL, COMPLETE) VALUES(?, ?, ?, 'N')`;
+			`INSERT INTO SCRAP(LAST_DATE, ID, SUBJECT, URL, COMPLETE) VALUES(CURRENT_TIMESTAMP, ?, ?, ?, 'N')`;
 		
 		query = mysql.format(sql, param);
 		
