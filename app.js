@@ -206,6 +206,7 @@ app.get('/ruliweb', function(req, res){
 		var sql = 
 			`UPDATE SCRAP
 			    SET COMPLETE = 'Y'
+			      , LAST_DATE = LAST_DATE
 			  WHERE ID = ?`;
 		
 		var query = mysql.format(sql, param);
@@ -230,9 +231,6 @@ cron.schedule('*/1 * * * *', function(){
 	var pc_url = "http://bbs.ruliweb.com/pc/board/300006?search_type=subject&search_key=";
   
 	const xbox_words = [
-	  "xsx",
-	  "엑시엑",
-	  "시리즈 x",
 	  "포르자",
 	  "forza"
   	];
