@@ -62,6 +62,17 @@ app.get('/topic', function(req, res){
 	res.send(req.query.id);
 });
 
+//일정등록
+app.get('/schedule', function(req, res){
+	res.render('schedule');
+});
+
+//기록등록
+app.get('/regist_record', function(req, res){
+	res.render('regist_record');
+});
+
+
 // 리더보드 조회
 app.get('/leader_board', function(req, res){
 	var dcd = req.query.dcd ;
@@ -206,6 +217,7 @@ app.get('/ruliweb', function(req, res){
 		var sql = 
 			`UPDATE SCRAP
 			    SET COMPLETE = 'Y'
+                  , LAST_DATE = LAST_DATE
 			  WHERE ID = ?`;
 		
 		var query = mysql.format(sql, param);
@@ -230,15 +242,17 @@ cron.schedule('*/1 * * * *', function(){
 	var pc_url = "http://bbs.ruliweb.com/pc/board/300006?search_type=subject&search_key=";
   
 	const xbox_words = [
-	  "xsx",
-	  "엑시엑",
-	  "시리즈 x",
+	 //"xsx",
+	 "pass",
+          "패스",
+          "호라",
 	  "포르자",
 	  "forza"
   	];
 	
 	const pc_words = [
-	  "RTX"
+	  "RTX",
+	  "AMD"
   	];
   
 	//XBOX 게시판
@@ -521,6 +535,8 @@ function getRival(res) {
 				response = response + "xxxxxxxxxxxxxxxxxxxxxx<br>";
 			}
 		}
+		
+		response = response + "<br>서킷 : 스즈카 서부";
 		res.send(response);
 	});		
 }
