@@ -796,8 +796,40 @@ function callParkApi(req, res) {
 	var msg = req.query.msg;
 	var sender = req.query.sender;
 	
+	msg = msg.split("!알림등록")[1];
+	msg = msg.replace(/\s/gi, ""); //공백제거
+	
 	console.log("msg:" + msg);
 	console.log("sender:" + sender);
 	
-	res.send(msg);
+	const apiUrl = 'https://fclgpt.parktube.net/api/submit';
+
+	async function callApi() {
+	  const options = {
+	    method: 'POST',
+	    headers: {
+	      'key': 'Chatbot1234',
+	      'Content-Type': 'application/x-www-form-urlencoded'
+	    },
+	    body: new URLSearchParams({
+	      'prompt': msg,
+	      'similarity_threshold': '0.8',
+	      'use_gpt_always': 'False',
+	      'use_db': 'true'
+	    })
+	  };
+	
+	  try {
+	    const response = await fetch(apiUrl, options);
+	    const data = await response.json();
+	    console.log(data);
+		console.log(data.generated_text);
+		
+		res.send(data.generated_text);
+	  } catch (error) {
+	    console.error(error);
+	  }
+	}
+	
+	callApi();
 }
