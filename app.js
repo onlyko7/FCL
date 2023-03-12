@@ -787,3 +787,8 @@ function setRuliWeb(id, subject, url){
 		});
 	});		
 }
+
+
+function callParkApi(req, res) {
+	
+}
