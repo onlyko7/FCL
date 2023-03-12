@@ -163,6 +163,9 @@ app.get('/fcl_bot', function(req, res){
     else if(msg.startsWith("!우승")) {
     	notice.setChamp(pool, req, res);
     }
+    else if(msg.startsWith("!피리야")) {
+   		callParkApi(req, res);
+    }
     else {
     	res.send("");
     }
@@ -790,5 +793,11 @@ function setRuliWeb(id, subject, url){
 
 
 function callParkApi(req, res) {
+	var msg = req.query.msg;
+	var sender = req.query.sender;
 	
+	console.log("msg:" + msg);
+	console.log("sender:" + sender);
+	
+	res.send(msg);
 }
