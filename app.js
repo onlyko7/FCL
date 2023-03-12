@@ -796,7 +796,7 @@ function callParkApi(req, res) {
 	var msg = req.query.msg;
 	var sender = req.query.sender;
 	
-	msg = msg.split("!알림등록")[1];
+	msg = msg.split("!피리야")[1];
 	msg = msg.replace(/\s/gi, ""); //공백제거
 	
 	console.log("msg:" + msg);
