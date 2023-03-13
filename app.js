@@ -829,8 +829,8 @@ function callParkApi(req, res) {
 		console.log("-----3");
 		console.log(data.generated_text);
 		
-		if(data.generated_text.trim().length() > 0)
-			setApiCall(room, content);
+		if(data.generated_text.trim().length > 0)
+			setApiCall(room, data.generated_text.trim());
 		
 		res.send(data.generated_text);
 	  } catch (error) {
