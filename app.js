@@ -818,13 +818,16 @@ function callParkApi(req, res) {
 	    },
 	    body: new URLSearchParams({
 	      'prompt': msg,
-	      'similarity_threshold': '0.8',
+	      'similarity_threshold': '0.7',
 	      'use_gpt_always': 'False',
 	      'use_db': 'true'
 	    })
 	  };
 	
 	  try {
+		console.log("api call------");
+	   	console.log(options);
+	   	
 		const response = await fetch(apiUrl, options);
 	    const data = await response.json();
 		
