@@ -794,6 +794,7 @@ function setRuliWeb(id, subject, url){
 
 function callParkApi(req, res) {
 	var msg = req.query.msg;
+	var room = req.query.room;
 	var sender = req.query.sender;
 	
 	msg = msg.split("!피리야")[1];
@@ -820,10 +821,16 @@ function callParkApi(req, res) {
 	  };
 	
 	  try {
+		console.log("-----1");
 	    const response = await fetch(apiUrl, options);
 	    const data = await response.json();
-	    console.log(data);
+		console.log("-----2");
+	   	console.log(data);
+		console.log("-----3");
 		console.log(data.generated_text);
+		
+		if(data.generated_text.trim().length() > 0)
+			setApiCall(room, content);
 		
 		res.send(data.generated_text);
 	  } catch (error) {
@@ -832,4 +839,26 @@ function callParkApi(req, res) {
 	}
 	
 	callApi();
+}
+
+
+// API 호출 결과 저장
+function setApiCall(room, content){	
+	if(room == null) {
+		return;
+	}
+			
+	// insert
+	param = [room, content];
+	sql = 
+		`INSERT INTO CHAT(ROOM, CONTENT) VALUES(?, ?)`;
+	
+	query = mysql.format(sql, param);
+	
+	pool.query(query, function (error, response) {
+		if (error) {
+			console.log(error);
+		}
+		return;
+	});
 }
