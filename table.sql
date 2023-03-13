@@ -44,3 +44,34 @@ CREATE TABLE `forza`.`SCRAP`
     INDEX `IDX_SCRAP_ID` (`ID`)
 )
 ENGINE=InnoDB DEFAULT CHARSET=cp1257 COLLATE=cp1257_general_ci ROW_FORMAT=Dynamic;
+
+
+CREATE TABLE `NOTICE` (
+  `NUM` decimal(3,0) NOT NULL,
+  `TITLE` varchar(255) CHARACTER SET utf8 COLLATE utf8_unicode_ci DEFAULT NULL,
+  `CONTENT` text CHARACTER SET utf8 COLLATE utf8_unicode_ci DEFAULT NULL,
+  PRIMARY KEY (`NUM`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC
+
+
+
+CREATE TABLE `RIVAL` (
+  `NAME` varchar(50) COLLATE utf8_unicode_ci NOT NULL,
+  `BEST_LAP` decimal(8,5) DEFAULT NULL,
+  PRIMARY KEY (`NAME`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci ROW_FORMAT=COMPACT
+
+CREATE TABLE orders (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  customer_id INT,
+  order_date DATE,
+  total DECIMAL(10,2)
+);
+
+CREATE TABLE `CHAT`
+(
+    `ID`       int  AUTO_INCREMENT PRIMARY KEY,
+    `ROOM` 	   varchar(300) COLLATE utf8_unicode_ci NOT NULL,
+    `CONTENT`  text          CHARACTER SET utf8 COLLATE utf8_unicode_ci NULL
+)
+ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
