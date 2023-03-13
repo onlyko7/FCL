@@ -837,7 +837,7 @@ function callParkApi(req, res) {
 		if(data.generated_text.trim().length > 0)
 			setApiCall(room, data.generated_text.trim());
 		
-		res.send(data.generated_text);
+		//res.send(data.generated_text);
 	  } catch (error) {
 	    console.error(error);
 	  }
@@ -891,6 +891,8 @@ function getChat(req, res) {
 		var id = results[0].ID;
 		var room = results[0].ROOM;
 		var content = results[0].CONTENT;
+		
+		content = content.replace("'''", "<br>");
 		
 		//결과 전송
 		res.send(room + "^|^" + content);
