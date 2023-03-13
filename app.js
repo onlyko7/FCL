@@ -811,6 +811,7 @@ function callParkApi(req, res) {
 	async function callApi() {
 	  const options = {
 	    method: 'POST',
+	    timeout: 5000,
 	    headers: {
 	      'key': 'Chatbot1234',
 	      'Content-Type': 'application/x-www-form-urlencoded'
