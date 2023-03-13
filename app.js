@@ -818,8 +818,8 @@ function callParkApi(req, res) {
 	    },
 	    body: new URLSearchParams({
 	      'prompt': msg,
-	      'similarity_threshold': '0.7',
-	      'use_gpt_always': 'False',
+	      'similarity_threshold': '0.8',
+	      'use_gpt_always': 'true',
 	      'use_db': 'true'
 	    })
 	  };
