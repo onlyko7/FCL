@@ -827,6 +827,9 @@ function callParkApi(req, res) {
 		const response = await fetch(apiUrl, options);
 	    const data = await response.json();
 		
+		console.log("api result------");
+	   	console.log(data);
+		
 		if(data.generated_text.trim().length > 0)
 			setApiCall(room, data.generated_text.trim());
 		
