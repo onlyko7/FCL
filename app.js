@@ -163,7 +163,7 @@ app.get('/fcl_bot', function(req, res){
     else if(msg.startsWith("!우승")) {
     	notice.setChamp(pool, req, res);
     }
-    else if(msg.startsWith("!피리야")) {
+    else if(msg.startsWith("피리야")) {
    		callParkApi(req, res);
     }
     else if(msg.startsWith("!getChat")) {
@@ -800,7 +800,7 @@ function callParkApi(req, res) {
 	var room = req.query.room;
 	var sender = req.query.sender;
 	
-	msg = msg.split("!피리야")[1];
+	msg = msg.split("피리야")[1];
 	msg = msg.replace(/\s/gi, ""); //공백제거
 	
 	console.log("msg:" + msg);
