@@ -166,6 +166,9 @@ app.get('/fcl_bot', function(req, res){
     else if(msg.startsWith("!피리야")) {
    		callParkApi(req, res);
     }
+    else if(msg.startsWith("!getChat")) {
+   		getChat(req, res);
+    }
     else {
     	res.send("");
     }
@@ -861,4 +864,61 @@ function setApiCall(room, content){
 		}
 		return;
 	});
+}
+
+
+// API 호출 결과 리턴
+function getChat(req, res) {
+	var sql = 
+		`SELECT ID
+		      , ROOM
+		      , CONTENT	
+		   FROM CHAT
+		  WHERE ID = (SELECT MIN(ID) FROM CHAT)`;
+		   
+	pool.query(sql, function (error, results, fields) {
+		if (error) {
+			console.log(error);
+		}
+		
+		if(results.length == 0) {
+			res.send("");
+			return;
+		}
+		
+		var id = results[0].ID;
+		var room = results[0].ROOM;
+		var content = results[0].CONTENT;
+		
+		//결과 전송
+		res.send(room + "^|^" + content);
+		
+		
+		
+		var param = [id];
+		
+		var sql = 
+			`DELETE	
+			   FROM CHAT
+			  WHERE ID = ?`;
+			   
+		var query = mysql.format(sql, param);
+		
+		pool.query(query, function (error, response) {
+			if (error) {
+				console.log(error);
+			}
+			
+			// 업데이트 건수가 1이면 정상
+			if(response.affectedRows == 1) {
+				//getAlarm(req, res);
+				return;
+			}
+			else {
+				//res.send("삭제할 데이터가 없습니다.");
+				return;
+			}
+		});		
+
+	});		
 }
