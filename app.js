@@ -854,7 +854,9 @@ function setApiCall(room, content){
 	}
 			
 	//개행문자 처리
-	content = content.replace(/'''/gi, "");
+	content = content.replace(/\n/gi, "<br>");
+	content = content.replace(/```/gi, "<br>");
+	
 	// insert
 	param = [room, content];
 	sql = 
