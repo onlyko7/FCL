@@ -897,6 +897,8 @@ function getChat(req, res) {
 		//결과 전송
 		res.send(room + "^|^" + content);
 		
+		console.log(content);
+		
 		
 		
 		var param = [id];
