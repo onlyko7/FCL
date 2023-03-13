@@ -853,6 +853,8 @@ function setApiCall(room, content){
 		return;
 	}
 			
+	//개행문자 처리
+	content = content.replace("\n", "<br>");
 	// insert
 	param = [room, content];
 	sql = 
@@ -891,8 +893,6 @@ function getChat(req, res) {
 		var id = results[0].ID;
 		var room = results[0].ROOM;
 		var content = results[0].CONTENT;
-		
-		content = content.replace("'''", "<br>");
 		
 		//결과 전송
 		res.send(room + "^|^" + content);
