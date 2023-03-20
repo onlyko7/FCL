@@ -799,28 +799,44 @@ function callParkApi(req, res) {
 	var msg = req.query.msg;
 	var room = req.query.room;
 	var sender = req.query.sender;
+	var system_role  = '';
 	
-	msg = msg.split("피리야")[1];
+	msg = msg.split("피리야")[1].trim();
+	    //+ ". 어미를 ~냥 으로 끝내는 답변해줘";
 	//msg = msg.replace(/\s/gi, ""); //공백제거
-	
+
+	if(sender.startsWith("Ssangza"))
+		msg = msg + ",answer in korean";
+	else if(sender.startsWith("서울우유"))
+		msg = msg + ",answer in korean";
+	else if(sender.startsWith("수고"))
+		msg = msg + ",Answer flirting tone Korean";
+	else if(sender.startsWith("Korsehyun"))
+		msg = msg + ",Answer in humorous";
+	else if(sender.startsWith("UnsignedDriver"))
+		msg = msg + "";
+	else
+		msg = msg + ",Answer in Korean";
+
 	console.log("msg:" + msg);
 	console.log("sender:" + sender);
 	
-	const apiUrl = 'https://fclgpt.parktube.net/api/submit';
+	const apiUrl = 'https://fclgpt.parktube.net/api/chat_completions';
 
 	async function callApi() {
 	  const options = {
 	    method: 'POST',
-	    timeout: 5000,
+	    timeout: 15000,
 	    headers: {
 	      'key': 'Chatbot1234',
 	      'Content-Type': 'application/x-www-form-urlencoded'
 	    },
 	    body: new URLSearchParams({
 	      'prompt': msg,
-	      'similarity_threshold': '0.8',
+	      'similarity_threshold': '0.85',
 	      'use_gpt_always': 'true',
-	      'use_db': 'true'
+	      'use_db': 'true',
+	      'system_role_content': system_role
 	    })
 	  };
 	
@@ -834,12 +850,21 @@ function callParkApi(req, res) {
 		console.log("api result------");
 	   	console.log(data);
 		
-		if(data.generated_text.trim().length > 0)
-			setApiCall(room, data.generated_text.trim());
+		if(data.generated_text.trim().length > 0) {
+		var tmp = data.generated_text.trim();
+		        //+ "<br>"
+		        //+ data.cost.trim();
+		
+		setApiCall(room, tmp);
+		
+		}
+			
 		
 		//res.send(data.generated_text);
 	  } catch (error) {
 	    console.error(error);
+		setApiCall(room, sender 
+		   + "님 질문의 응답을 받지 못했습니다. 모든 책임은 또다른 자아 챗지피티에게 있습니다. -피리 배상");
 	  }
 	}
 	
@@ -856,6 +881,15 @@ function setApiCall(room, content){
 	//개행문자 처리
 	content = content.replace(/\n/gi, "<br>");
 	content = content.replace(/```/gi, "<br>");
+
+	// 이모지 제거
+	content = removeEmoji(content);
+
+
+	// ASCII 문자셋 이외의 문자 제거
+	//content = content.replace(/[^\x00-\x7F]/g, '');
+	
+	//content = pool.escape(content);
 	
 	// insert
 	param = [room, content];
@@ -929,4 +963,9 @@ function getChat(req, res) {
 		});		
 
 	});		
+}
+
+function removeEmoji(str) {
+  // 정규식을 사용하여 이모지를 찾음
+  return str.replace(/[\u{1F600}-\u{1F64F}|\u{1F300}-\u{1F5FF}|\u{1F680}-\u{1F6FF}|\u{2600}-\u{26FF}|\u{2700}-\u{27BF}|\u{1F900}-\u{1F9FF}]/gu, '');
 }
